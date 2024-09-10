@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface EndpointViewService {
     void hit(EndpointHit endpointHit);
+
     List<ViewStats> getStats(String startTime, String endTime, List<String> uris, Boolean unique);
 }
