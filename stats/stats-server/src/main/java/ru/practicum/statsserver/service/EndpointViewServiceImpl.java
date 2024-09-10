@@ -43,46 +43,49 @@ public class EndpointViewServiceImpl implements EndpointViewService {
 
         List<ViewStats> listViews = new ArrayList<>();
 
-        if (unique) { //TODO переписать без циклов
+        if (unique) {
             Map<ViewStatsIndicatorsWithIp, Integer> mapIndicatorsWithIp = new HashMap<>();
 
-            for (EndpointViewEntity view : listEntity) {
+            listEntity.forEach(view -> {
                 ViewStatsIndicatorsWithIp viewStatsIndicatorsWithIp = new ViewStatsIndicatorsWithIp(view.getApp(),
                         view.getUri(), view.getIp());
-                if (!(mapIndicatorsWithIp.containsKey(viewStatsIndicatorsWithIp))) {
+
+                if (!mapIndicatorsWithIp.containsKey(viewStatsIndicatorsWithIp)) {
                     mapIndicatorsWithIp.put(viewStatsIndicatorsWithIp, 1);
                 }
-            }
+            });
 
             Map<ViewStats, Integer> mapView = new HashMap<>();
 
-            for (Map.Entry<ViewStatsIndicatorsWithIp, Integer> view : mapIndicatorsWithIp.entrySet()) {
-                ViewStats viewStats = new ViewStats(view.getKey().getApp(), view.getKey().getUri(), null);
+            mapIndicatorsWithIp.forEach((view, count) -> {
+                ViewStats viewStats = new ViewStats(view.getApp(), view.getUri(), null);
+
                 if (mapView.containsKey(viewStats)) {
                     mapView.put(viewStats, (mapView.get(viewStats) + 1));
                 } else {
                     mapView.put(viewStats, 1);
                 }
-            }
+            });
 
-            for (Map.Entry<ViewStats, Integer> view : mapView.entrySet()) {
-                listViews.add(new ViewStats(view.getKey().getApp(), view.getKey().getUri(), view.getValue()));
-            }
+            mapView.forEach((viewStats, count) -> {
+                listViews.add(new ViewStats(viewStats.getApp(), viewStats.getUri(), count));
+            });
         } else {
             Map<ViewStatsIndicators, Integer> mapIndicators = new HashMap<>();
 
-            for (EndpointViewEntity view : listEntity) {
+            listEntity.forEach(view -> {
                 ViewStatsIndicators viewIndicators = new ViewStatsIndicators(view.getApp(), view.getUri());
+
                 if (mapIndicators.containsKey(viewIndicators)) {
                     mapIndicators.put(viewIndicators, (mapIndicators.get(viewIndicators) + 1));
                 } else {
                     mapIndicators.put(viewIndicators, 1);
                 }
-            }
+            });
 
-            for (Map.Entry<ViewStatsIndicators, Integer> view : mapIndicators.entrySet()) {
-                listViews.add(new ViewStats(view.getKey().getApp(), view.getKey().getUri(), view.getValue()));
-            }
+            mapIndicators.forEach((viewStats, count) -> {
+                listViews.add(new ViewStats(viewStats.getApp(), viewStats.getUri(), count));
+            });
         }
 
         Collections.sort(listViews);
