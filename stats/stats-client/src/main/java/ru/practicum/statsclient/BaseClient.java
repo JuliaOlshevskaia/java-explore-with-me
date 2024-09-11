@@ -19,14 +19,6 @@ public class BaseClient {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
     }
 
-//    protected <T> ResponseEntity<Object> post(String path, T body) {
-//        return post(path, null, null, body);
-//    }
-//
-//    protected <T> ResponseEntity<Object> post(String path, long userId, T body) {
-//        return post(path, userId, null, body);
-//    }
-
     protected <T> ResponseEntity<Object> post(String path, @io.micrometer.core.lang.Nullable Map<String, Object> parameters, T body) {
         return makeAndSendRequest(HttpMethod.POST, path, parameters, body);
     }
@@ -52,9 +44,6 @@ public class BaseClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-//        if (userId != null) {
-//            headers.set("X-Sharer-User-Id", String.valueOf(userId));
-//        }
         return headers;
     }
 

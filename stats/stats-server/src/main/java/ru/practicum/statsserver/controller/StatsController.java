@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "")
+@RequestMapping
 public class StatsController {
     private final EndpointViewService service;
 
