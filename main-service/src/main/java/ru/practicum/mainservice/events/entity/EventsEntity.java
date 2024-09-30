@@ -2,6 +2,7 @@ package ru.practicum.mainservice.events.entity;
 
 import lombok.*;
 import ru.practicum.mainservice.categories.entity.CategoriesEntity;
+import ru.practicum.mainservice.compilations.entity.CompilationEntity;
 import ru.practicum.mainservice.events.dto.StateEnum;
 import ru.practicum.mainservice.users.entity.UserEntity;
 
@@ -69,6 +70,10 @@ public class EventsEntity {
 
     @Column(name = "views")
     private Integer views;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "compilation_id")
+    private CompilationEntity compilation;
 
     @Override
     public boolean equals(Object o) {

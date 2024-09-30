@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.mainservice.errors.exceptions.DataNotFoundException;
 import ru.practicum.mainservice.errors.exceptions.EventValidationException;
 import ru.practicum.mainservice.events.dto.StateEnum;
+import ru.practicum.mainservice.events.dto.StatusUpdateRequestEnum;
 import ru.practicum.mainservice.events.entity.EventsEntity;
 import ru.practicum.mainservice.events.repository.EventsRepository;
 import ru.practicum.mainservice.requests.dto.ParticipationRequestDto;
@@ -41,12 +42,12 @@ public class RequestsServiceImpl implements RequestsService {
         if (!(eventEntity.getState().equals(StateEnum.PUBLISHED))) {
             throw new EventValidationException("Нельзя участвовать в неопубликованном событии");
         }
-        if (eventEntity.getConfirmedRequests() >= eventEntity.getParticipantLimit()) {
+        if ((eventEntity.getConfirmedRequests() >= eventEntity.getParticipantLimit()) && (eventEntity.getParticipantLimit() > 0)) {
             throw new EventValidationException("У события достигнут лимит запросов на участие");
         }
         RequestsEntity requestEntity;
         if (eventEntity.getRequestModeration()) {
-            requestEntity = new RequestsEntity(null, eventEntity, userEntity, LocalDateTime.now(), StateEnum.PENDING);
+            requestEntity = new RequestsEntity(null, eventEntity, userEntity, LocalDateTime.now(), StateEnum.CONFIRMED);
         } else {
             requestEntity = new RequestsEntity(null, eventEntity, userEntity, LocalDateTime.now(), StateEnum.PUBLISHED);
         }

@@ -16,7 +16,12 @@ public interface EventsService {
     List<ParticipationRequestDto> getEventParticipants(Integer userId, Integer eventId);
     EventRequestStatusUpdateResult changeRequestStatus(Integer userId, Integer eventId, EventRequestStatusUpdateRequest request);
     EventFullDto updateEvent_1(Integer eventId, UpdateEventAdminRequest request);
-    List<EventFullDto> getEvents_2(List<Integer> users, List<String> states, List<Integer> categories, String rangeStart,
+    List<EventFullDto> getEvents_2(List<Integer> users, List<StateEnum> states, List<Integer> categories, String rangeStart,
                                    String rangeEnd, Integer from, Integer size);
+
+    List<EventShortDto> getEvents_1(String text, List<Integer> categories, Boolean paid, String rangeStart,
+                                    String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
+                                    Integer size);
+    EventFullDto getEvent_1(Integer id);
     void isEventExists(Integer eventId);
 }

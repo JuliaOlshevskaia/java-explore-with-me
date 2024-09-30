@@ -13,4 +13,8 @@ public interface CategoriesService {
     CategoryDto addCategory(NewCategoryDto request);
     void deleteCategory(Integer catId);
     CategoryDto updateCategory(Integer catId, NewCategoryDto request);
+
+    List<CategoryDto> getCategories (Integer from, Integer size);
+
+    CategoryDto getCategory(Integer catId);
 }

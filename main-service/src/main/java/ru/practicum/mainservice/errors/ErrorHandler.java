@@ -11,6 +11,7 @@ import ru.practicum.mainservice.errors.dto.ApiError;
 import ru.practicum.mainservice.errors.exceptions.DataNotFoundException;
 import ru.practicum.mainservice.errors.exceptions.EventUpdateException;
 import ru.practicum.mainservice.errors.exceptions.EventValidationException;
+import ru.practicum.mainservice.errors.exceptions.ValidationException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -20,19 +21,17 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ResponseEntity<Object> handleValidationException(final ValidationException exception) {
-//        log.info("Данные не валидны {}", exception.getMessage());
-//        ApiError apiError = new ApiError();
-//        apiError.setLevel("FATAL");
-//        apiError.setCode(ex.getClass().getName());
-//        apiError.setTitle("Ошибка сервера");
-//        apiError.setUserMessage("Сервер временно недоступен");
-//        apiError.setEndpoint(request.getRequestURI());
-//        apiError.setDebugMessage(ex.getMessage()+" at "+ex.getParameter()+": "+ex.getName());
-//        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleValidationException(final ValidationException exception) {
+        log.info("Данные не валидны {}", exception.getMessage());
+        ApiError apiError = new ApiError();
+        apiError.setMessage(exception.getMessage());
+        apiError.setReason("Incorrectly made request.");
+        apiError.setStatus(HttpStatus.BAD_REQUEST.name());
+        apiError.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -60,9 +59,9 @@ public class ErrorHandler {
         ApiError apiError = new ApiError();
         apiError.setMessage(exception.getMessage());
         apiError.setReason("For the requested operation the conditions are not met.");
-        apiError.setStatus(HttpStatus.CONFLICT.name());
+        apiError.setStatus(HttpStatus.FORBIDDEN.name());
         apiError.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler

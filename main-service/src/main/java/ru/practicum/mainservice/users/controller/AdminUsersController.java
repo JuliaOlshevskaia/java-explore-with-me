@@ -16,7 +16,7 @@ import java.util.List;
 public class AdminUsersController {
     private final UserService service;
 
-    @GetMapping()
+    @GetMapping
     public List<UserDto> getUsers(@RequestParam(name = "ids", required = false) List<Integer> ids,
                                   @RequestParam(name = "from", required = false, defaultValue = "0") Integer from,
                                   @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {

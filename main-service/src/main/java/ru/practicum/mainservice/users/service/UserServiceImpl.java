@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers(List<Integer> ids, Integer from, Integer size) {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
         List<UserEntity> entities;
-        if (ids.size() == 0) {
+        if (ids == null || ids.size() == 0) {
             entities = repository.findAll(pageParam).getContent();
         } else {
             entities = repository.findAllByIdIn(ids, pageParam);

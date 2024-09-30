@@ -1,6 +1,7 @@
 package ru.practicum.mainservice.requests.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.events.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.mainservice.events.dto.EventRequestStatusUpdateResult;
@@ -26,6 +27,7 @@ public class PrivateRequestsController {
     }
 
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addParticipationRequest(@PathVariable Integer userId,
                                                 @RequestParam("eventId") Integer eventId) {
         eventService.isEventExists(eventId);

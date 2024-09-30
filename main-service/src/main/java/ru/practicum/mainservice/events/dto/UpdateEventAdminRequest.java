@@ -2,11 +2,15 @@ package ru.practicum.mainservice.events.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Validated
 public class UpdateEventAdminRequest {
     @Size(min = 20, max = 2000)
     private String annotation;

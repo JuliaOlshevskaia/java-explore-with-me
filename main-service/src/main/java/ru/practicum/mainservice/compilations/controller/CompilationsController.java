@@ -12,14 +12,14 @@ import java.util.List;
 public class CompilationsController {
 
     @GetMapping
-    public List<CompilationDto> getStats(@RequestParam("pinned") Boolean pinned,
+    public List<CompilationDto> getCompilations(@RequestParam("pinned") Boolean pinned,
                                          @RequestParam(name = "from", required = false, defaultValue = "0") Integer from,
                                          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
         return null;
     }
 
     @GetMapping("/{compId}")
-    public CompilationDto getStats(@PathVariable Integer compId) {
+    public CompilationDto getCompilation(@PathVariable Integer compId) {
         return null;
     }
 

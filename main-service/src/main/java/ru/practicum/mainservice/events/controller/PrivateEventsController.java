@@ -1,12 +1,15 @@
 package ru.practicum.mainservice.events.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.events.dto.*;
 import ru.practicum.mainservice.events.service.EventsService;
 import ru.practicum.mainservice.requests.dto.ParticipationRequestDto;
 import ru.practicum.mainservice.users.service.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,7 +28,8 @@ public class PrivateEventsController {
     }
 
     @PostMapping("/{userId}/events")
-    public EventFullDto addEvent(@PathVariable Integer userId, @RequestBody NewEventDto request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public EventFullDto addEvent(@PathVariable Integer userId, @Valid @RequestBody NewEventDto request) {
         userService.isUserExists(userId);
         return service.addEvent(userId, request);
     }
@@ -40,7 +44,7 @@ public class PrivateEventsController {
     @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto updateEvent(@PathVariable Integer userId,
                                 @PathVariable Integer eventId,
-                                @RequestBody UpdateEventUserRequest request) {
+                                @Valid @RequestBody UpdateEventUserRequest request) {
         userService.isUserExists(userId);
         return service.updateEvent(userId, eventId, request);
     }

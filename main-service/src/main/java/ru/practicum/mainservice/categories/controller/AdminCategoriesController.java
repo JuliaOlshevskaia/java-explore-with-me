@@ -1,6 +1,7 @@
 package ru.practicum.mainservice.categories.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.categories.dto.CategoryDto;
 import ru.practicum.mainservice.categories.dto.NewCategoryDto;
@@ -15,11 +16,13 @@ public class AdminCategoriesController {
     private final CategoriesService service;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto addCategory(@RequestBody NewCategoryDto request) {
         return service.addCategory(request);
     }
 
     @DeleteMapping("/{catId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Integer catId) {
         service.deleteCategory(catId);
     }

@@ -34,4 +34,6 @@ public interface EventsMapper {
     EventFullDto toDto(EventsEntity entity, CategoryDto category, UserShortDto initiator, Location location, String createdDate, String eventDate);
 
     List<EventShortDto> toListShortDto(List<EventsEntity> entities);
+
+    EventShortDto toShortDto(EventsEntity entity);
 }

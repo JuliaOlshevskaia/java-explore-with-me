@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.practicum.mainservice.categories.dto.CategoryDto;
 import ru.practicum.mainservice.categories.entity.CategoriesEntity;
 import ru.practicum.mainservice.categories.mapper.CategoriesMapper;
@@ -11,6 +12,7 @@ import ru.practicum.mainservice.categories.repository.CategoriesRepository;
 import ru.practicum.mainservice.errors.exceptions.DataNotFoundException;
 import ru.practicum.mainservice.errors.exceptions.EventUpdateException;
 import ru.practicum.mainservice.errors.exceptions.EventValidationException;
+import ru.practicum.mainservice.errors.exceptions.ValidationException;
 import ru.practicum.mainservice.events.dto.*;
 import ru.practicum.mainservice.events.entity.EventsEntity;
 import ru.practicum.mainservice.events.entity.LocationsEntity;
@@ -28,9 +30,11 @@ import ru.practicum.mainservice.users.mapper.UserMapper;
 import ru.practicum.mainservice.users.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -70,6 +74,9 @@ public class EventsServiceImpl implements EventsService {
         entity.setInitiator(userEntity);
         entity.setLocation(locationsEntity);
         entity.setState(StateEnum.PENDING);
+        if (entity.getConfirmedRequests() == null) {
+            entity.setConfirmedRequests(0);
+        }
 //        entity.setCategory(categoriesEntity);
         EventsEntity entityCreated = repository.save(entity);
         EventFullDto result = mapper.toDto(entityCreated,
@@ -79,7 +86,6 @@ public class EventsServiceImpl implements EventsService {
                 entityCreated.getCreatedDate().format(DTF),
                 entityCreated.getEventDate().format(DTF)
                 );
-//        result.setEventDate(entityCreated.getEventDate().toString());
         return result;
     }
 
@@ -208,6 +214,10 @@ public class EventsServiceImpl implements EventsService {
              throw new EventUpdateException("Cannot publish the event because it's not in the right state: PUBLISHED");
          }
 
+         if ( ChronoUnit.HOURS.between(LocalDateTime.now(), entity.getEventDate()) < 1) {
+             throw new EventUpdateException("Cannot publish the event because it's not in the right event date");
+         }
+
          if (request.getEventDate() != null) {
              LocalDateTime eventDate = LocalDateTime.parse(request.getEventDate(), DTF);
              checkEventDate(eventDate);
@@ -254,13 +264,93 @@ public class EventsServiceImpl implements EventsService {
         return result;
      }
 
-    public List<EventFullDto> getEvents_2(List<Integer> users, List<String> states, List<Integer> categories, String rangeStart,
+     @Override
+     public List<EventShortDto> getEvents_1(String text, List<Integer> categories, Boolean paid, String rangeStart,
+                                    String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
+                                    Integer size) {
+        Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
+         List<EventsEntity> entities;
+
+         if (onlyAvailable) {
+             if (rangeStart == null && rangeEnd == null) {
+                 entities = repository.searchAvailable(text, categories, paid, LocalDateTime.now(),
+                         pageParam);
+             } else {
+                 entities = repository.searchAvailable(text, categories, paid, LocalDateTime.parse(rangeStart, DTF),
+                         LocalDateTime.parse(rangeEnd, DTF), pageParam);
+             }
+         } else {
+             if (rangeStart == null && rangeEnd == null) {
+                 entities = repository.search(text, categories, paid, LocalDateTime.now(),
+                         pageParam);
+             } else {
+                 entities = repository.search(text, categories, paid,  LocalDateTime.parse(rangeStart, DTF),
+                         LocalDateTime.parse(rangeEnd, DTF), pageParam);
+             }
+         }
+
+//         if (entities.size() == 0) {
+//             throw new ValidationException("Event must be published");
+//         }
+
+//         for (EventsEntity event : entities) {
+//             if (event.getState() != StateEnum.PUBLISHED) {
+//                 throw new ValidationException("Event must be published");
+//             }
+//         }
+
+        List<EventShortDto> eventShortDtos = mapper.toListShortDto(entities);
+
+        return eventShortDtos;
+    }
+
+    public List<EventFullDto> getEvents_2(List<Integer> users, List<StateEnum> states, List<Integer> categories, String rangeStart,
                                    String rangeEnd, Integer from, Integer size) {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
-        List<EventsEntity> events = repository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
-                users, states, categories, LocalDateTime.parse(rangeStart, DTF), LocalDateTime.parse(rangeEnd, DTF), pageParam);
+        List<EventsEntity> events = new ArrayList<>();
 
-        return null;
+        if (users == null && states == null && categories == null &&
+                rangeEnd == null && rangeStart == null) {
+            events = repository.findAll(pageParam).getContent();
+        } else if (users != null && states == null && categories == null &&
+                rangeEnd == null && rangeStart == null) {
+
+        } else if (users == null && states != null && categories == null &&
+                rangeEnd == null && rangeStart == null) {
+
+        } else if (users == null && states == null && categories != null &&
+                rangeEnd == null && rangeStart == null) {
+
+        } else if (users != null && states != null && categories == null &&
+                rangeEnd == null && rangeStart == null) {
+
+        } else if (users != null && states == null && categories != null &&
+                rangeEnd == null && rangeStart == null) {
+
+        } else if (users == null && states != null && categories != null &&
+                rangeEnd == null && rangeStart == null) {
+
+        } else {
+            events = repository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
+                    users, states, categories, LocalDateTime.parse(rangeStart, DTF),
+                    LocalDateTime.parse(rangeEnd, DTF), pageParam);
+        }
+
+        List<EventFullDto> eventFullDtos = new ArrayList<>();
+
+        if (events.size()>0) {
+            for (EventsEntity entities : events) {
+                EventFullDto result = mapper.toDto(entities,
+                        categoriesMapper.toDto(entities.getCategory()),
+                        userMapper.toShortDto(entities.getInitiator()),
+                        locationsMapper.toDto(entities.getLocation()),
+                        entities.getCreatedDate().format(DTF),
+                        entities.getEventDate().format(DTF)
+                );
+                eventFullDtos.add(result);
+            }
+        }
+        return eventFullDtos;
     }
 
     @Override
@@ -280,7 +370,7 @@ public class EventsServiceImpl implements EventsService {
     private void checkEventDate(LocalDateTime eventDate) {
         long diffInHours = ChronoUnit.HOURS.between(LocalDateTime.now(), eventDate);
         if (diffInHours<2) {
-            throw new EventValidationException("Field: eventDate. Error: должно содержать дату, которая еще не наступила. " +
+            throw new ValidationException("Field: eventDate. Error: должно содержать дату, которая еще не наступила. " +
                     "Value: " + eventDate);
         }
     }
@@ -293,6 +383,23 @@ public class EventsServiceImpl implements EventsService {
         } else {
             return locationsEntity;
         }
+    }
+
+    @Override
+    public EventFullDto getEvent_1(Integer id) {
+        EventsEntity entity = repository.findById(id).get();
+        if (entity.getState() != StateEnum.PUBLISHED) {
+            throw new DataNotFoundException("Event with id=" + id + " was not found");
+        }
+        entity.setViews(entity.getViews() == null ? 1 : (entity.getViews() + 1));
+        EventFullDto result = mapper.toDto(entity,
+                categoriesMapper.toDto(entity.getCategory()),
+                userMapper.toShortDto(entity.getInitiator()),
+                locationsMapper.toDto(entity.getLocation()),
+                entity.getCreatedDate().format(DTF),
+                entity.getEventDate().format(DTF)
+        );
+        return result;
     }
 
 }
