@@ -21,11 +21,18 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
 
     List<EventsEntity> findAllByCategoryId(Integer catId);
 
-    List<EventsEntity> findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(List<Integer> usersId,
+    @Query("select ee from EventsEntity ee " +
+            "where ee.initiator.id in (:usersId) " +
+            "and ee.category.id in (:categoriesId) " +
+            "and ee.state in (:statesId) " +
+            "and ee.eventDate > (:rangeStart) " +
+            "and ee.eventDate < (:rangeEnd) "
+    )
+    List<EventsEntity> getAllEvents(List<Integer> usersId,
                                                                                                           List<StateEnum> statesId,
                                                                                                           List<Integer> categoriesId,
-                                                                                                          LocalDateTime startDate,
-                                                                                                          LocalDateTime endDate,
+                                                                                                          LocalDateTime rangeStart,
+                                                                                                          LocalDateTime rangeEnd,
                                                                                                           Pageable pageable);
 
     List<EventsEntity> findAllByInitiatorIdInAndStateInAndCategoryIdIn(List<Integer> usersId,

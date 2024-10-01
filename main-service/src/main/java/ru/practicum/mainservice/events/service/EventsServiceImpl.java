@@ -356,7 +356,7 @@ public class EventsServiceImpl implements EventsService {
                 rangeEnd == null && rangeStart == null) {
             events = repository.findAllByStateInAndCategoryIdIn(states, categories, pageParam);
         } else {
-            events = repository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
+            events = repository.getAllEvents(
                     users, states, categories, LocalDateTime.parse(rangeStart, DTF),
                     LocalDateTime.parse(rangeEnd, DTF), pageParam);
         }
