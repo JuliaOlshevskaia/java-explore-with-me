@@ -387,7 +387,7 @@ public class EventsServiceImpl implements EventsService {
 
     private void checkEventStatus(Integer eventId) {
         EventsEntity entity = repository.findById(eventId).get();
-        if (entity.getState().equals(StateEnum.PUBLISHED.toString())) {
+        if (entity.getState() == StateEnum.PUBLISHED) {
             throw new EventValidationException("Only pending or canceled events can be changed");
         }
     }

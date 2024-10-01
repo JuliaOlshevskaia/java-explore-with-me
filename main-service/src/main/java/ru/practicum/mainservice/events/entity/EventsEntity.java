@@ -74,12 +74,4 @@ public class EventsEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "compilation_id")
     private CompilationEntity compilation;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass() || ((EventsEntity) o).id == null || this.id == null) return false;
-        EventsEntity that = (EventsEntity) o;
-        return Objects.equals(id, that.id);
-    }
 }

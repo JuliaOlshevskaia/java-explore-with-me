@@ -29,12 +29,4 @@ public class CompilationEntity {
 
     @OneToMany(mappedBy = "compilation", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     private Set<EventsEntity> events = new HashSet<>();
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass() || ((CompilationEntity) o).id == null || this.id == null) return false;
-        CompilationEntity that = (CompilationEntity) o;
-        return Objects.equals(id, that.id);
-    }
 }

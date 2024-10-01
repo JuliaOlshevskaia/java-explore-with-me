@@ -35,13 +35,4 @@ public class RequestsEntity {
 
     @Column(name = "status", nullable = false)
     private StateEnum status;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass() || ((RequestsEntity) o).id == null || this.id == null) return false;
-        RequestsEntity that = (RequestsEntity) o;
-        return Objects.equals(id, that.id);
-    }
-
 }
