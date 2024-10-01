@@ -1,5 +1,6 @@
 package ru.practicum.mainservice.events.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,12 @@ import java.util.List;
 
 @Repository
 public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
-    List<EventsEntity> findAllByInitiatorId(Integer userId, Pageable pageable);
+    @Query("select ee from EventsEntity ee " +
+            "where ee.initiator.id = (:usersId) "
+    )
+    List<EventsEntity> getByUser(@Param("usersId") Integer userId, Pageable pageable);
+
+    Page<EventsEntity> findAll(Pageable pageable);
 
     EventsEntity findAllByIdAndInitiatorId(Integer eventId, Integer userId);
 
@@ -94,8 +100,9 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
             "and ee.eventDate > (:rangeStart) "
     )
     List<EventsEntity> search(@Param("categories") List<Integer> categories,
-                              @Param("rangeStart") LocalDateTime rangeStart,
-                              Pageable pageable);
+                              @Param("rangeStart") LocalDateTime rangeStart);
+
+    List<EventsEntity> findAllByCategoryIdInAndEventDateAfter(List<Integer> categories, LocalDateTime rangeStart, Pageable pageable);
 
     @Query("select ee from EventsEntity ee " +
             "where ee.paid = (:paid) " +
@@ -127,4 +134,28 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
     List<EventsEntity> searchAvailable(@Param("text") String text, @Param("categories") List<Integer> categories,
                                        @Param("paid") Boolean paid, @Param("rangeStart") LocalDateTime rangeStart,
                                        Pageable pageable);
+
+    @Query("select ee from EventsEntity ee " +
+            "where ee.eventDate > (:rangeStart) " +
+            "and ((ee.confirmedRequests < ee.participantLimit) or (ee.participantLimit = 0)) " +
+            "and (lower(ee.annotation) like lower(concat('%', :text, '%')) " +
+            "or lower(ee.description) like lower(concat('%', :text, '%')))")
+    List<EventsEntity> searchAvailable(@Param("text") String text, @Param("rangeStart") LocalDateTime rangeStart,
+                                       Pageable pageable);
+
+    @Query("select ee from EventsEntity ee " +
+            "where ee.category.id in (:categories) " +
+            "and ee.eventDate > (:rangeStart) " +
+            "and ((ee.confirmedRequests < ee.participantLimit) or (ee.participantLimit = 0)) ")
+    List<EventsEntity> searchAvailable(@Param("categories") List<Integer> categories,
+                                       @Param("rangeStart") LocalDateTime rangeStart,
+                                       Pageable pageable);
+
+    @Query("select ee from EventsEntity ee " +
+            "where ee.paid = (:paid) " +
+            "and ee.eventDate > (:rangeStart) " +
+            "and ((ee.confirmedRequests < ee.participantLimit) or (ee.participantLimit = 0)) ")
+    List<EventsEntity> searchAvailable(@Param("paid") Boolean paid, @Param("rangeStart") LocalDateTime rangeStart,
+                                       Pageable pageable);
+
 }

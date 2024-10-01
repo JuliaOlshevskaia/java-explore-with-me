@@ -54,9 +54,10 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public List<EventShortDto> getEvents(Integer userId, Integer from, Integer size) {
-        Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
+        Pageable pageParam = PageRequest.of(from, size);
 
-        List<EventsEntity> eventsEntities = repository.findAllByInitiatorId(userId, pageParam);
+//        List<EventsEntity> eventsEntities = repository.getByUser(userId, pageParam);
+        List<EventsEntity> eventsEntities = repository.findAll(pageParam).getContent();
         return mapper.toListShortDto(eventsEntities);
     }
 
@@ -273,12 +274,24 @@ public class EventsServiceImpl implements EventsService {
                                     String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
                                     Integer size, HttpServletRequest request) {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
+        Pageable pageParam2 = PageRequest.of(from, size);
          List<EventsEntity> entities;
 
          if (onlyAvailable) {
              if (rangeStart == null && rangeEnd == null) {
-                 entities = repository.searchAvailable(text, categories, paid, LocalDateTime.now(),
-                         pageParam);
+
+                 if (text != null && categories == null && paid == null) {
+                     entities = repository.searchAvailable(text, LocalDateTime.now(),
+                             pageParam);
+                 } else if (text == null && categories != null && paid == null) {
+                     entities = repository.searchAvailable(categories, LocalDateTime.now(), pageParam);
+                 } else if (text == null && categories == null && paid != null) {
+                     entities = repository.searchAvailable(paid, LocalDateTime.now(),
+                             pageParam);
+                 } else {
+                     entities = repository.searchAvailable(text, categories, paid, LocalDateTime.now(),
+                             pageParam);
+                 }
              } else {
                  entities = repository.searchAvailable(text, categories, paid, LocalDateTime.parse(rangeStart, DTF),
                          LocalDateTime.parse(rangeEnd, DTF), pageParam);
@@ -289,8 +302,7 @@ public class EventsServiceImpl implements EventsService {
                      entities = repository.search(text, LocalDateTime.now(),
                              pageParam);
                  } else if (text == null && categories != null && paid == null) {
-                     entities = repository.search(categories, LocalDateTime.now(),
-                             pageParam);
+                     entities = repository.findAllByCategoryIdInAndEventDateAfter(categories, LocalDateTime.now(), pageParam2);
                  } else if (text == null && categories == null && paid != null) {
                      entities = repository.search(paid, LocalDateTime.now(),
                              pageParam);
