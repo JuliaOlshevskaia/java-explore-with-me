@@ -33,6 +33,7 @@ public interface EventsMapper {
     @Mapping(target = "id", source = "entity.id")
     EventFullDto toDto(EventsEntity entity, CategoryDto category, UserShortDto initiator, Location location, String createdDate, String eventDate);
 
+    @Mapping(target = "eventDate", source = "eventDate")
     List<EventShortDto> toListShortDto(List<EventsEntity> entities);
 
     EventShortDto toShortDto(EventsEntity entity);

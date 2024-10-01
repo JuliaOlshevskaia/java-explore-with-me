@@ -30,6 +30,24 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
                                                                                                           List<Integer> categoriesId,
                                                                                                           Pageable pageable);
 
+    List<EventsEntity> findAllByInitiatorIdIn(List<Integer> usersId, Pageable pageable);
+
+    List<EventsEntity> findAllByStateIn(List<StateEnum> statesId, Pageable pageable);
+
+    List<EventsEntity> findAllByCategoryIdIn(List<Integer> categoriesId, Pageable pageable);
+
+    List<EventsEntity> findAllByInitiatorIdInAndStateIn(List<Integer> usersId,
+                                                                                                          List<StateEnum> statesId,
+                                                                                                          Pageable pageable);
+
+    List<EventsEntity> findAllByInitiatorIdInAndCategoryIdIn(List<Integer> usersId,
+                                                                                                          List<Integer> categoriesId,
+                                                                                                          Pageable pageable);
+
+    List<EventsEntity> findAllByStateInAndCategoryIdIn(List<StateEnum> statesId,
+                                                                                                          List<Integer> categoriesId,
+                                                                                                          Pageable pageable);
+
     @Query("select ee from EventsEntity ee " +
             "where ee.paid = (:paid) " +
             "and ee.category.id in (:categories) " +
@@ -50,6 +68,30 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
             "or lower(ee.description) like lower(concat('%', :text, '%')))"
     )
     List<EventsEntity> search(@Param("text") String text, @Param("categories") List<Integer> categories,
+                              @Param("paid") Boolean paid, @Param("rangeStart") LocalDateTime rangeStart,
+                              Pageable pageable);
+
+    @Query("select ee from EventsEntity ee " +
+            "where ee.eventDate > (:rangeStart) " +
+            "and (lower(ee.annotation) like lower(concat('%', :text, '%')) " +
+            "or lower(ee.description) like lower(concat('%', :text, '%')))"
+    )
+    List<EventsEntity> search(@Param("text") String text, @Param("rangeStart") LocalDateTime rangeStart,
+                              Pageable pageable);
+
+    @Query("select ee from EventsEntity ee " +
+            "where ee.category.id in (:categories) " +
+            "and ee.eventDate > (:rangeStart) "
+    )
+    List<EventsEntity> search(@Param("categories") List<Integer> categories,
+                              @Param("rangeStart") LocalDateTime rangeStart,
+                              Pageable pageable);
+
+    @Query("select ee from EventsEntity ee " +
+            "where ee.paid = (:paid) " +
+            "and ee.eventDate > (:rangeStart) "
+    )
+    List<EventsEntity> search(
                               @Param("paid") Boolean paid, @Param("rangeStart") LocalDateTime rangeStart,
                               Pageable pageable);
 

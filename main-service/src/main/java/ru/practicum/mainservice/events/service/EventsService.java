@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.mainservice.events.dto.*;
 import ru.practicum.mainservice.requests.dto.ParticipationRequestDto;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventsService {
@@ -21,7 +22,7 @@ public interface EventsService {
 
     List<EventShortDto> getEvents_1(String text, List<Integer> categories, Boolean paid, String rangeStart,
                                     String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
-                                    Integer size);
+                                    Integer size, HttpServletRequest request);
     EventFullDto getEvent_1(Integer id);
     void isEventExists(Integer eventId);
 }

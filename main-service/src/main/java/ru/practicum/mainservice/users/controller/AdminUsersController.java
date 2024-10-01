@@ -8,6 +8,7 @@ import ru.practicum.mainservice.users.dto.NewUserRequest;
 import ru.practicum.mainservice.users.dto.UserDto;
 import ru.practicum.mainservice.users.service.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,7 +25,8 @@ public class AdminUsersController {
     }
 
     @PostMapping
-    public UserDto registerUser(@RequestBody NewUserRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto registerUser(@Valid @RequestBody NewUserRequest request) {
         return service.registerUser(request);
     }
 

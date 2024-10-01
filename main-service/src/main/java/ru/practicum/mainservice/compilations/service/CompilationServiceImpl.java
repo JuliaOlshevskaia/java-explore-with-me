@@ -42,7 +42,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         List<EventShortDto> eventShortDtos = new ArrayList<>();
 
-        if (request.getEvents().size() > 0) {
+        if (request.getEvents() != null && request.getEvents().size() > 0) {
             for (Integer event : request.getEvents()) {
                 EventsEntity eventEntity = eventsRepository.findById(event).get();
                 eventEntity.setCompilation(entitySaved);
@@ -53,8 +53,8 @@ public class CompilationServiceImpl implements CompilationService {
                 EventShortDto eventShortDto = eventsMapper.toShortDto(eventsEntitySaved);
                 eventShortDtos.add(eventShortDto);
             }
-            dto.setEvents(eventShortDtos);
         }
+        dto.setEvents(eventShortDtos);
         return dto;
     }
 
@@ -73,11 +73,11 @@ public class CompilationServiceImpl implements CompilationService {
         }
         CompilationEntity entity = repository.findById(compId).get();
 
-        if (!(entity.getTitle().equals(request.getTitle()))) {
+        if (request.getTitle() != null && !(entity.getTitle().equals(request.getTitle()))) {
             entity.setTitle(request.getTitle());
         }
 
-        if (!(entity.getPinned().equals(request.getPinned()))) {
+        if (request.getPinned() != null && !(entity.getPinned().equals(request.getPinned()))) {
             entity.setPinned(request.getPinned());
         }
 
@@ -87,11 +87,11 @@ public class CompilationServiceImpl implements CompilationService {
         List<EventShortDto> eventShortDtos = new ArrayList<>();
 //        compilationEventRepository.deleteById(compId);
 
-        if (request.getEvents().size() > 0) {
+        if (request.getEvents() != null && request.getEvents().size() > 0) {
 
             for (Integer event : request.getEvents()) {
                 EventsEntity eventEntity = eventsRepository.findById(event).get();
-                if (!(eventEntity.getCompilation().getId().equals(compId))) {
+                if (eventEntity.getCompilation() == null || !(eventEntity.getCompilation().getId().equals(compId))) {
                     eventEntity.setCompilation(entitySaved);
                     EventsEntity eventsEntitySaved = eventsRepository.save(eventEntity);
                     EventShortDto eventShortDto = eventsMapper.toShortDto(eventsEntitySaved);
@@ -115,7 +115,13 @@ public class CompilationServiceImpl implements CompilationService {
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
 
-        List<CompilationEntity> compilationEntities = repository.findAllByPinnedIs(pinned, pageParam);
+        List<CompilationEntity> compilationEntities = new ArrayList<>();
+
+        if (pinned == null) {
+            compilationEntities = repository.findAll(pageParam).getContent();
+        } else {
+            compilationEntities = repository.findAllByPinnedIs(pinned, pageParam);
+        }
         List<CompilationDto> dtos = new ArrayList<>();
 
         for (CompilationEntity entity : compilationEntities) {

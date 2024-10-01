@@ -2,9 +2,12 @@ package ru.practicum.mainservice.errors;
 
 import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.mainservice.errors.dto.ApiError;
@@ -53,15 +56,27 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<Object> handleEventUpdateException(final EventUpdateException exception) {
         log.info("Данные не валидны {}", exception.getMessage());
         ApiError apiError = new ApiError();
         apiError.setMessage(exception.getMessage());
         apiError.setReason("For the requested operation the conditions are not met.");
-        apiError.setStatus(HttpStatus.FORBIDDEN.name());
+        apiError.setStatus(HttpStatus.CONFLICT.name());
         apiError.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> handleConstraintViolationException(final DataIntegrityViolationException exception) {
+        log.info("Данные не валидны {}", exception.getMessage());
+        ApiError apiError = new ApiError();
+        apiError.setMessage(exception.getMessage());
+        apiError.setReason("Integrity constraint has been violated.");
+        apiError.setStatus(HttpStatus.CONFLICT.name());
+        apiError.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler

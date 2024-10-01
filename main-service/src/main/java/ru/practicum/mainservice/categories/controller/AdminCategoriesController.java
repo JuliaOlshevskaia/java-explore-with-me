@@ -7,6 +7,7 @@ import ru.practicum.mainservice.categories.dto.CategoryDto;
 import ru.practicum.mainservice.categories.dto.NewCategoryDto;
 import ru.practicum.mainservice.categories.service.CategoriesService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +18,7 @@ public class AdminCategoriesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto addCategory(@RequestBody NewCategoryDto request) {
+    public CategoryDto addCategory(@Valid @RequestBody NewCategoryDto request) {
         return service.addCategory(request);
     }
 
@@ -28,7 +29,7 @@ public class AdminCategoriesController {
     }
 
     @PatchMapping("/{catId}")
-    public CategoryDto updateCategory(@PathVariable Integer catId, @RequestBody NewCategoryDto request) {
+    public CategoryDto updateCategory(@PathVariable Integer catId, @Valid @RequestBody NewCategoryDto request) {
         return service.updateCategory(catId, request);
     }
 

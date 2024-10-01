@@ -46,10 +46,12 @@ public class RequestsServiceImpl implements RequestsService {
             throw new EventValidationException("У события достигнут лимит запросов на участие");
         }
         RequestsEntity requestEntity;
-        if (eventEntity.getRequestModeration()) {
-            requestEntity = new RequestsEntity(null, eventEntity, userEntity, LocalDateTime.now(), StateEnum.CONFIRMED);
+        if (eventEntity.getRequestModeration() && eventEntity.getParticipantLimit() > 0) {
+            requestEntity = new RequestsEntity(null, eventEntity, userEntity, LocalDateTime.now(), StateEnum.PENDING);
         } else {
-            requestEntity = new RequestsEntity(null, eventEntity, userEntity, LocalDateTime.now(), StateEnum.PUBLISHED);
+            requestEntity = new RequestsEntity(null, eventEntity, userEntity, LocalDateTime.now(), StateEnum.CONFIRMED);
+            eventEntity.setConfirmedRequests(eventEntity.getConfirmedRequests() + 1);
+            eventsRepository.save(eventEntity);
         }
 
         RequestsEntity requestCreatedEntity = repository.save(requestEntity);

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.practicum.mainservice.categories.dto.CategoryDto;
 import ru.practicum.mainservice.categories.entity.CategoriesEntity;
 import ru.practicum.mainservice.categories.mapper.CategoriesMapper;
@@ -29,17 +28,16 @@ import ru.practicum.mainservice.users.entity.UserEntity;
 import ru.practicum.mainservice.users.mapper.UserMapper;
 import ru.practicum.mainservice.users.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
+//@AllArgsConstructor
 public class EventsServiceImpl implements EventsService {
     private final EventsRepository repository;
     private final CategoriesRepository categoriesRepository;
@@ -94,6 +92,10 @@ public class EventsServiceImpl implements EventsService {
         checkEventStatus(eventId);
 
         EventsEntity entity = repository.findById(eventId).get();
+
+        if (entity.getState() == StateEnum.PUBLISHED) {
+            throw new EventUpdateException("Only pending or canceled events can be changed");
+        }
 
         if (request.getEventDate() != null) {
             LocalDateTime eventDate = LocalDateTime.parse(request.getEventDate(), DTF);
@@ -176,26 +178,28 @@ public class EventsServiceImpl implements EventsService {
         if (request.getStatus().equals(StatusUpdateRequestEnum.CONFIRMED.toString())) {
             requestsEntities.forEach(i -> {
                 if (participantLimit.equals(0) || confirmedRequests[0] < participantLimit) {
-                    i.setStatus(StateEnum.PUBLISHED);
+                    i.setStatus(StateEnum.CONFIRMED);
                     requestsRepository.save(i);
                     ++confirmedRequests[0];
+                    eventsEntity.setConfirmedRequests(eventsEntity.getConfirmedRequests() + 1);
+                    repository.save(eventsEntity);
                 } else {
-                    i.setStatus(StateEnum.CANCELED);
+                    i.setStatus(StateEnum.REJECTED);
                     requestsRepository.save(i);
                 }
             });
         } else {
             requestsEntities.forEach(i -> {
-                i.setStatus(StateEnum.CANCELED);
+                i.setStatus(StateEnum.REJECTED);
                 requestsRepository.save(i);
             });
         }
         List<ParticipationRequestDto> requestsConfirmed = new ArrayList<>();
         List<ParticipationRequestDto> requestsRejected = new ArrayList<>();
         List<RequestsEntity> requestsEntitiesUpdated = requestsRepository.findAllByIdIn(requestIds);
-        requestsEntitiesUpdated.stream().filter(f -> f.getStatus() == StateEnum.PUBLISHED).forEach(i ->
+        requestsEntitiesUpdated.stream().filter(f -> f.getStatus() == StateEnum.CONFIRMED).forEach(i ->
                 requestsConfirmed.add(requestsMapper.toDto(i)));
-        requestsEntitiesUpdated.stream().filter(f -> f.getStatus() == StateEnum.CANCELED).forEach(i ->
+        requestsEntitiesUpdated.stream().filter(f -> f.getStatus() == StateEnum.REJECTED).forEach(i ->
                 requestsRejected.add(requestsMapper.toDto(i)));
 
         EventRequestStatusUpdateResult eventRequestStatusUpdateResult = new EventRequestStatusUpdateResult();
@@ -214,7 +218,7 @@ public class EventsServiceImpl implements EventsService {
              throw new EventUpdateException("Cannot publish the event because it's not in the right state: PUBLISHED");
          }
 
-         if ( ChronoUnit.HOURS.between(LocalDateTime.now(), entity.getEventDate()) < 1) {
+         if (ChronoUnit.HOURS.between(LocalDateTime.now(), entity.getEventDate()) < 1) {
              throw new EventUpdateException("Cannot publish the event because it's not in the right event date");
          }
 
@@ -267,7 +271,7 @@ public class EventsServiceImpl implements EventsService {
      @Override
      public List<EventShortDto> getEvents_1(String text, List<Integer> categories, Boolean paid, String rangeStart,
                                     String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
-                                    Integer size) {
+                                    Integer size, HttpServletRequest request) {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
          List<EventsEntity> entities;
 
@@ -281,17 +285,28 @@ public class EventsServiceImpl implements EventsService {
              }
          } else {
              if (rangeStart == null && rangeEnd == null) {
-                 entities = repository.search(text, categories, paid, LocalDateTime.now(),
-                         pageParam);
+                 if (text != null && categories == null && paid == null) {
+                     entities = repository.search(text, LocalDateTime.now(),
+                             pageParam);
+                 } else if (text == null && categories != null && paid == null) {
+                     entities = repository.search(categories, LocalDateTime.now(),
+                             pageParam);
+                 } else if (text == null && categories == null && paid != null) {
+                     entities = repository.search(paid, LocalDateTime.now(),
+                             pageParam);
+                 } else {
+                     entities = repository.search(text, categories, paid, LocalDateTime.now(),
+                             pageParam);
+                 }
              } else {
                  entities = repository.search(text, categories, paid,  LocalDateTime.parse(rangeStart, DTF),
                          LocalDateTime.parse(rangeEnd, DTF), pageParam);
              }
          }
 
-//         if (entities.size() == 0) {
-//             throw new ValidationException("Event must be published");
-//         }
+         if (entities.size() == 0) {
+             throw new ValidationException("Event must be published");
+         }
 
 //         for (EventsEntity event : entities) {
 //             if (event.getState() != StateEnum.PUBLISHED) {
@@ -299,8 +314,18 @@ public class EventsServiceImpl implements EventsService {
 //             }
 //         }
 
-        List<EventShortDto> eventShortDtos = mapper.toListShortDto(entities);
+         List<EventShortDto> eventShortDtos = new ArrayList<>();
 
+//        List<EventShortDto> eventShortDtos = mapper.toListShortDto(entities);
+
+         for (EventsEntity entity : entities) {
+             EventShortDto eventShortDto = new EventShortDto(entity.getAnnotation(),
+                     new CategoryDto(entity.getCategory().getId(), entity.getCategory().getName()),
+                     entity.getConfirmedRequests(), entity.getEventDate().format(DTF), entity.getId(),
+                     new UserShortDto(entity.getInitiator().getId(), entity.getInitiator().getName()),
+                     entity.getPaid(), entity.getTitle(), entity.getViews());
+             eventShortDtos.add(eventShortDto);
+         }
         return eventShortDtos;
     }
 
@@ -314,22 +339,22 @@ public class EventsServiceImpl implements EventsService {
             events = repository.findAll(pageParam).getContent();
         } else if (users != null && states == null && categories == null &&
                 rangeEnd == null && rangeStart == null) {
-
+            events = repository.findAllByInitiatorIdIn(users, pageParam);
         } else if (users == null && states != null && categories == null &&
                 rangeEnd == null && rangeStart == null) {
-
+            events = repository.findAllByStateIn(states, pageParam);
         } else if (users == null && states == null && categories != null &&
                 rangeEnd == null && rangeStart == null) {
-
+            events = repository.findAllByCategoryIdIn(categories, pageParam);
         } else if (users != null && states != null && categories == null &&
                 rangeEnd == null && rangeStart == null) {
-
+            events = repository.findAllByInitiatorIdInAndStateIn(users, states, pageParam);
         } else if (users != null && states == null && categories != null &&
                 rangeEnd == null && rangeStart == null) {
-
+            events = repository.findAllByInitiatorIdInAndCategoryIdIn(users, categories, pageParam);
         } else if (users == null && states != null && categories != null &&
                 rangeEnd == null && rangeStart == null) {
-
+            events = repository.findAllByStateInAndCategoryIdIn(states, categories, pageParam);
         } else {
             events = repository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
                     users, states, categories, LocalDateTime.parse(rangeStart, DTF),

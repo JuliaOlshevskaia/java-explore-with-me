@@ -9,6 +9,7 @@ import ru.practicum.mainservice.categories.dto.NewCategoryDto;
 import ru.practicum.mainservice.categories.entity.CategoriesEntity;
 import ru.practicum.mainservice.categories.mapper.CategoriesMapper;
 import ru.practicum.mainservice.categories.repository.CategoriesRepository;
+import ru.practicum.mainservice.errors.exceptions.ConstraintViolationException;
 import ru.practicum.mainservice.errors.exceptions.DataNotFoundException;
 import ru.practicum.mainservice.errors.exceptions.EventValidationException;
 import ru.practicum.mainservice.events.entity.EventsEntity;
@@ -35,9 +36,10 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public CategoryDto updateCategory(Integer catId, NewCategoryDto request) {
-        if (repository.existsById(catId)) {
+        if (!(repository.existsById(catId))) {
             throw new DataNotFoundException("Category with id=" + catId + " was not found");
         }
+
         CategoriesEntity entity = findCategoryById(catId);
         entity.setName(request.getName());
         CategoriesEntity entityChanged = repository.save(entity);
@@ -46,7 +48,7 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public void deleteCategory(Integer catId) {
-        if (repository.existsById(catId)) {
+        if (!(repository.existsById(catId))) {
             throw new DataNotFoundException("Category with id=" + catId + " was not found");
         }
         List<EventsEntity> eventsEntities = eventsRepository.findAllByCategoryId(catId);
@@ -70,10 +72,11 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public CategoryDto getCategory(Integer catId) {
-        CategoriesEntity entity = repository.findById(catId).get();
-        if (entity == null) {
+        if (!(repository.existsById(catId))) {
             throw new DataNotFoundException("Category with id=" + catId + " was not found");
         }
+
+        CategoriesEntity entity = repository.findById(catId).get();
         return mapper.toDto(entity);
     }
 }
