@@ -1,6 +1,5 @@
 package ru.practicum.mainservice.events.mapper;
 
-import lombok.Generated;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.mainservice.categories.dto.CategoryDto;
@@ -17,7 +16,6 @@ import java.util.List;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Generated
 @Mapper(componentModel = SPRING)
 public interface EventsMapper {
     @Mapping(target = "category", source = "category")

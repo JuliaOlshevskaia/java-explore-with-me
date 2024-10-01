@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Generated
 @Getter
 @Setter
 @Entity

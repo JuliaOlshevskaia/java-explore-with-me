@@ -31,26 +31,30 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto saveCompilation(NewCompilationDto request) {
         CompilationEntity entity = new CompilationEntity(null, request.getTitle(), request.getPinned(), null);
         CompilationEntity entitySaved = repository.save(entity);
-        CompilationDto dto = mapper.toDto(entitySaved);
 
         List<EventShortDto> eventShortDtos = new ArrayList<>();
 
         if (request.getEvents() != null && request.getEvents().size() > 0) {
-            for (Integer event : request.getEvents()) {
-                EventsEntity eventEntity = eventsRepository.findById(event).get();
-                eventEntity.setCompilation(entitySaved);
-                EventsEntity eventsEntitySaved = eventsRepository.save(eventEntity);
-                EventShortDto eventShortDto = eventsMapper.toShortDto(eventsEntitySaved);
+            List<EventsEntity> events = eventsRepository.findAllByIdIn(request.getEvents());
+            List<EventsEntity> eventsUpdated = new ArrayList<>();
+            for (EventsEntity event : events) {
+                event.setCompilation(entitySaved);
+                eventsUpdated.add(event);
+                EventShortDto eventShortDto = eventsMapper.toShortDto(event);
                 eventShortDtos.add(eventShortDto);
             }
+            if (eventsUpdated.size() > 0) {
+                eventsRepository.saveAll(eventsUpdated);
+            }
         }
+        CompilationDto dto = mapper.toDto(entitySaved);
         dto.setEvents(eventShortDtos);
         return dto;
     }
 
     @Override
     public void deleteCompilation(Integer compId) {
-        if (!(repository.existsById(compId))) {
+        if (!repository.existsById(compId)) {
             throw new DataNotFoundException("Compilation with id=" + compId + " was not found");
         }
         repository.deleteById(compId);
@@ -58,10 +62,8 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto updateCompilation(Integer compId, UpdateCompilationRequest request) {
-        if (!(repository.existsById(compId))) {
-            throw new DataNotFoundException("Compilation with id=" + compId + " was not found");
-        }
-        CompilationEntity entity = repository.findById(compId).get();
+        CompilationEntity entity = repository.findById(compId).orElseThrow(() ->
+                new DataNotFoundException("Compilation with id=" + compId + " was not found"));
 
         if (request.getTitle() != null && !(entity.getTitle().equals(request.getTitle()))) {
             entity.setTitle(request.getTitle());
@@ -77,20 +79,18 @@ public class CompilationServiceImpl implements CompilationService {
         List<EventShortDto> eventShortDtos = new ArrayList<>();
 
         if (request.getEvents() != null && request.getEvents().size() > 0) {
-
-            for (Integer event : request.getEvents()) {
-                EventsEntity eventEntity = eventsRepository.findById(event).get();
-                if (eventEntity.getCompilation() == null || !(eventEntity.getCompilation().getId().equals(compId))) {
-                    eventEntity.setCompilation(entitySaved);
-                    EventsEntity eventsEntitySaved = eventsRepository.save(eventEntity);
-                    EventShortDto eventShortDto = eventsMapper.toShortDto(eventsEntitySaved);
+            List<EventsEntity> events = eventsRepository.findAllByIdIn(request.getEvents());
+            List<EventsEntity> eventsUpdated = new ArrayList<>();
+            for (EventsEntity event : events) {
+                if (event.getCompilation() == null || !(event.getCompilation().getId().equals(compId))) {
+                    event.setCompilation(entitySaved);
+                    eventsUpdated.add(event);
+                    EventShortDto eventShortDto = eventsMapper.toShortDto(event);
                     eventShortDtos.add(eventShortDto);
                 }
-
-                eventEntity.setCompilation(entity);
-                EventsEntity eventsEntitySaved = eventsRepository.save(eventEntity);
-                EventShortDto eventShortDto = eventsMapper.toShortDto(eventsEntitySaved);
-                eventShortDtos.add(eventShortDto);
+            }
+            if (eventsUpdated.size() > 0) {
+                eventsRepository.saveAll(eventsUpdated);
             }
             dto.setEvents(eventShortDtos);
         }
@@ -126,11 +126,8 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto getCompilation(Integer compId) {
-        if (!(repository.existsById(compId))) {
-            throw new DataNotFoundException("Compilation with id=" + compId + " was not found");
-        }
-
-        CompilationEntity entity = repository.findById(compId).get();
+        CompilationEntity entity = repository.findById(compId).orElseThrow(() ->
+                new DataNotFoundException("Compilation with id=" + compId + " was not found"));
 
         CompilationDto dto = mapper.toDto(entity);
         List<EventShortDto> eventShortDtos = new ArrayList<>();

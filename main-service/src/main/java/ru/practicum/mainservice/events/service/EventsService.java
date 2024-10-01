@@ -29,6 +29,4 @@ public interface EventsService {
                                     Integer size, HttpServletRequest request);
 
     EventFullDto getEvent_1(Integer id);
-
-    void isEventExists(Integer eventId);
 }

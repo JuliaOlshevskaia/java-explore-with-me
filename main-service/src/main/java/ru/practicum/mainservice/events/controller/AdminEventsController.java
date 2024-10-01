@@ -1,6 +1,7 @@
 package ru.practicum.mainservice.events.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.events.dto.EventFullDto;
 import ru.practicum.mainservice.events.dto.StateEnum;
@@ -10,6 +11,7 @@ import ru.practicum.mainservice.events.service.EventsService;
 import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 @RestController
 @AllArgsConstructor
 @RequestMapping("/admin/events")

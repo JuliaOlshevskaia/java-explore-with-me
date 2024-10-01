@@ -1,13 +1,11 @@
 package ru.practicum.mainservice.events.mapper;
 
-import lombok.Generated;
 import org.mapstruct.Mapper;
 import ru.practicum.mainservice.events.dto.Location;
 import ru.practicum.mainservice.events.entity.LocationsEntity;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Generated
 @Mapper(componentModel = SPRING)
 public interface LocationsMapper {
     LocationsEntity toEntity(Location location);

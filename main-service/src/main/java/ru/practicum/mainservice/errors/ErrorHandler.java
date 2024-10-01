@@ -1,6 +1,5 @@
 package ru.practicum.mainservice.errors;
 
-import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 
-@Generated
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {

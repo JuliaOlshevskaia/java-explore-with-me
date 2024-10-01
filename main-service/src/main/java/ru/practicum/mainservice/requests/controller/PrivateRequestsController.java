@@ -28,8 +28,6 @@ public class PrivateRequestsController {
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addParticipationRequest(@PathVariable Integer userId,
                                                 @RequestParam("eventId") Integer eventId) {
-        eventService.isEventExists(eventId);
-        userService.isUserExists(userId);
         return service.addParticipationRequest(userId, eventId);
     }
 

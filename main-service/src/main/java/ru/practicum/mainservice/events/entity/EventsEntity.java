@@ -9,7 +9,6 @@ import ru.practicum.mainservice.users.entity.UserEntity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Generated
 @Getter
 @Setter
 @Entity

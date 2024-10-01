@@ -33,12 +33,12 @@ public class RequestsServiceImpl implements RequestsService {
 
     @Override
     public ParticipationRequestDto addParticipationRequest(Integer userId, Integer eventId) {
-        UserEntity userEntity = userRepository.findById(userId).get();
-        EventsEntity eventEntity = eventsRepository.findById(eventId).get();
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User with id=" + userId + " was not found"));
+        EventsEntity eventEntity = eventsRepository.findById(eventId).orElseThrow(() -> new DataNotFoundException("Event with id=" + eventId + " was not found"));
         if (eventEntity.getInitiator().getId().equals(userId)) {
             throw new EventValidationException("Инициатор события не может добавить запрос на участие в своём событии");
         }
-        if (!(eventEntity.getState().equals(StateEnum.PUBLISHED))) {
+        if (!eventEntity.getState().equals(StateEnum.PUBLISHED)) {
             throw new EventValidationException("Нельзя участвовать в неопубликованном событии");
         }
         if ((eventEntity.getConfirmedRequests() >= eventEntity.getParticipantLimit()) && (eventEntity.getParticipantLimit() > 0)) {
@@ -59,16 +59,10 @@ public class RequestsServiceImpl implements RequestsService {
 
     @Override
     public ParticipationRequestDto cancelRequest(Integer userId, Integer requestId) {
-        isRequestExists(requestId);
-        RequestsEntity entity = repository.findById(requestId).get();
+        RequestsEntity entity = repository.findById(requestId).orElseThrow(() ->
+                new DataNotFoundException("Request with id=" + requestId + " was not found"));
         entity.setStatus(StateEnum.CANCELED);
         RequestsEntity entityUpdated = repository.save(entity);
         return mapper.toDto(entityUpdated);
-    }
-
-    private void isRequestExists(Integer requestId) {
-        if (!(repository.existsById(requestId))) {
-            throw new DataNotFoundException("Request with id=" + requestId + " was not found");
-        }
     }
 }

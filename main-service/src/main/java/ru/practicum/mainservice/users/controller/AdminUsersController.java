@@ -2,6 +2,7 @@ package ru.practicum.mainservice.users.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainservice.users.dto.NewUserRequest;
 import ru.practicum.mainservice.users.dto.UserDto;
@@ -10,6 +11,7 @@ import ru.practicum.mainservice.users.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 @RestController
 @AllArgsConstructor
 @RequestMapping("/admin/users")

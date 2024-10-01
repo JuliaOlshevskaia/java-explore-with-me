@@ -24,7 +24,4 @@ public class CompilationsController {
     public CompilationDto getCompilation(@PathVariable Integer compId) {
         return service.getCompilation(compId);
     }
-
-
-
 }

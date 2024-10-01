@@ -40,13 +40,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Integer userId) {
-        UserEntity entity = findUserById(userId);
-        repository.delete(entity);
-    }
-
-    public UserEntity findUserById(Integer userId) {
-        isUserExists(userId);
-        return repository.findById(userId).get();
+        if (!repository.existsById(userId)) {
+            throw new DataNotFoundException("User with id=" + userId + " was not found");
+        }
+        repository.deleteById(userId);
     }
 
     @Override

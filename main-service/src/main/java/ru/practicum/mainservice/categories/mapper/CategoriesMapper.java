@@ -1,6 +1,5 @@
 package ru.practicum.mainservice.categories.mapper;
 
-import lombok.Generated;
 import org.mapstruct.Mapper;
 import ru.practicum.mainservice.categories.dto.CategoryDto;
 import ru.practicum.mainservice.categories.dto.NewCategoryDto;
@@ -10,7 +9,6 @@ import java.util.List;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Generated
 @Mapper(componentModel = SPRING)
 public interface CategoriesMapper {
     CategoriesEntity toEntity(NewCategoryDto newCategory);

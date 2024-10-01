@@ -14,6 +14,7 @@ import ru.practicum.mainservice.errors.exceptions.EventValidationException;
 import ru.practicum.mainservice.events.entity.EventsEntity;
 import ru.practicum.mainservice.events.repository.EventsRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -32,7 +33,7 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public CategoryDto updateCategory(Integer catId, NewCategoryDto request) {
-        if (!(repository.existsById(catId))) {
+        if (!repository.existsById(catId)) {
             throw new DataNotFoundException("Category with id=" + catId + " was not found");
         }
 
@@ -44,19 +45,18 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public void deleteCategory(Integer catId) {
-        if (!(repository.existsById(catId))) {
+        if (!repository.existsById(catId)) {
             throw new DataNotFoundException("Category with id=" + catId + " was not found");
         }
         List<EventsEntity> eventsEntities = eventsRepository.findAllByCategoryId(catId);
         if (eventsEntities.size() > 0) {
             throw new EventValidationException("The category is not empty");
         }
-        CategoriesEntity entity = findCategoryById(catId);
-        repository.delete(entity);
+        repository.deleteById(catId);
     }
 
     public CategoriesEntity findCategoryById(Integer categoryId) {
-        return repository.findById(categoryId).get();
+        return repository.findById(categoryId).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
@@ -68,11 +68,8 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public CategoryDto getCategory(Integer catId) {
-        if (!(repository.existsById(catId))) {
-            throw new DataNotFoundException("Category with id=" + catId + " was not found");
-        }
-
-        CategoriesEntity entity = repository.findById(catId).get();
+        CategoriesEntity entity = repository.findById(catId).orElseThrow(() ->
+                new DataNotFoundException("Category with id=" + catId + " was not found"));
         return mapper.toDto(entity);
     }
 }

@@ -1,6 +1,5 @@
 package ru.practicum.mainservice.users.mapper;
 
-import lombok.Generated;
 import org.mapstruct.Mapper;
 import ru.practicum.mainservice.users.dto.NewUserRequest;
 import ru.practicum.mainservice.users.dto.UserDto;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Generated
 @Mapper(componentModel = SPRING)
 public interface UserMapper {
     UserEntity toEntity(NewUserRequest newUser);

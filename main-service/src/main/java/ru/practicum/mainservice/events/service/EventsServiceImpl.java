@@ -28,6 +28,7 @@ import ru.practicum.mainservice.users.entity.UserEntity;
 import ru.practicum.mainservice.users.mapper.UserMapper;
 import ru.practicum.mainservice.users.repository.UserRepository;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,8 +63,8 @@ public class EventsServiceImpl implements EventsService {
     public EventFullDto addEvent(Integer userId, NewEventDto request) {
         LocalDateTime eventDate = LocalDateTime.parse(request.getEventDate(), DTF);
         checkEventDate(eventDate);
-        CategoriesEntity categoriesEntity = categoriesRepository.findById(request.getCategory()).get();
-        UserEntity userEntity = userRepository.findById(userId).get();
+        CategoriesEntity categoriesEntity = categoriesRepository.findById(request.getCategory()).orElseThrow(EntityNotFoundException::new);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         EventsEntity entity = mapper.toEntity(request, categoriesEntity, eventDate);
         LocationsEntity locationsEntity = createLocation(request.getLocation());
         entity.setCreatedDate(LocalDateTime.now());
@@ -86,10 +87,9 @@ public class EventsServiceImpl implements EventsService {
     }
 
     public EventFullDto updateEvent(Integer userId, Integer eventId, UpdateEventUserRequest request) {
-        isEventExists(eventId);
         checkEventStatus(eventId);
 
-        EventsEntity entity = repository.findById(eventId).get();
+        EventsEntity entity = repository.findById(eventId).orElseThrow(() -> new DataNotFoundException("Event with id=" + eventId + " was not found"));
 
         if (entity.getState() == StateEnum.PUBLISHED) {
             throw new EventUpdateException("Only pending or canceled events can be changed");
@@ -104,15 +104,15 @@ public class EventsServiceImpl implements EventsService {
             entity.setAnnotation(request.getAnnotation());
         }
         if (request.getCategory() != null && entity.getCategory().getId().equals(request.getCategory())) {
-            CategoriesEntity categoriesEntity = categoriesRepository.findById(request.getCategory()).get();
+            CategoriesEntity categoriesEntity = categoriesRepository.findById(request.getCategory()).orElseThrow(EntityNotFoundException::new);
             entity.setCategory(categoriesEntity);
         }
         if (request.getDescription() != null) {
             entity.setDescription(request.getDescription());
         }
         if (request.getLocation() != null &&
-                (!(entity.getLocation().getLat().equals(request.getLocation().getLat())) ||
-                !(entity.getLocation().getLon().equals(request.getLocation().getLon())))) {
+                (!entity.getLocation().getLat().equals(request.getLocation().getLat()) ||
+                !entity.getLocation().getLon().equals(request.getLocation().getLon()))) {
             entity.setLocation(createLocation(request.getLocation()));
         }
         if (request.getPaid() != null) {
@@ -156,7 +156,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public List<ParticipationRequestDto> getEventParticipants(Integer userId, Integer eventId) {
-        isEventExists(eventId);
+        repository.findById(eventId).orElseThrow(() -> new DataNotFoundException("Event with id=" + eventId + " was not found"));
         List<EventsEntity> events = repository.findAllByInitiatorId(userId);
         List<RequestsEntity> requests = requestsRepository.findAllByEventIn(events);
         return requestsMapper.toListDto(requests);
@@ -164,8 +164,9 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
      public EventRequestStatusUpdateResult changeRequestStatus(Integer userId, Integer eventId, EventRequestStatusUpdateRequest request) {
-        isEventExists(eventId);
-        EventsEntity eventsEntity = repository.findById(eventId).get();
+        EventsEntity eventsEntity = repository.findById(eventId).orElseThrow(() ->
+                new DataNotFoundException("Event with id=" + eventId + " was not found"));
+
         final Integer[] confirmedRequests = {eventsEntity.getConfirmedRequests()};
         Integer participantLimit = eventsEntity.getParticipantLimit();
         if (confirmedRequests[0] >= participantLimit) {
@@ -209,8 +210,8 @@ public class EventsServiceImpl implements EventsService {
 
      @Override
      public EventFullDto updateEvent_1(Integer eventId, UpdateEventAdminRequest request) {
-         isEventExists(eventId);
-         EventsEntity entity = repository.findById(eventId).get();
+         EventsEntity entity = repository.findById(eventId).orElseThrow(() ->
+                 new DataNotFoundException("Event with id=" + eventId + " was not found"));
 
          if (entity.getState() != StateEnum.PENDING) {
              throw new EventUpdateException("Cannot publish the event because it's not in the right state: PUBLISHED");
@@ -229,15 +230,15 @@ public class EventsServiceImpl implements EventsService {
              entity.setAnnotation(request.getAnnotation());
          }
          if (request.getCategory() != null && entity.getCategory().getId().equals(request.getCategory())) {
-             CategoriesEntity categoriesEntity = categoriesRepository.findById(request.getCategory()).get();
+             CategoriesEntity categoriesEntity = categoriesRepository.findById(request.getCategory()).orElseThrow(EntityNotFoundException::new);
              entity.setCategory(categoriesEntity);
          }
          if (request.getDescription() != null) {
              entity.setDescription(request.getDescription());
          }
          if (request.getLocation() != null &&
-                 (!(entity.getLocation().getLat().equals(request.getLocation().getLat())) ||
-                         !(entity.getLocation().getLon().equals(request.getLocation().getLon())))) {
+                 (!entity.getLocation().getLat().equals(request.getLocation().getLat()) ||
+                         !entity.getLocation().getLon().equals(request.getLocation().getLon()))) {
              entity.setLocation(createLocation(request.getLocation()));
          }
          if (request.getPaid() != null) {
@@ -378,15 +379,8 @@ public class EventsServiceImpl implements EventsService {
         return eventFullDtos;
     }
 
-    @Override
-    public void isEventExists(Integer eventId) {
-        if (!(repository.existsById(eventId))) {
-            throw new DataNotFoundException("Event with id=" + eventId + " was not found");
-        }
-    }
-
     private void checkEventStatus(Integer eventId) {
-        EventsEntity entity = repository.findById(eventId).get();
+        EventsEntity entity = repository.findById(eventId).orElseThrow(EntityNotFoundException::new);
         if (entity.getState() == StateEnum.PUBLISHED) {
             throw new EventValidationException("Only pending or canceled events can be changed");
         }
@@ -412,7 +406,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public EventFullDto getEvent_1(Integer id) {
-        EventsEntity entity = repository.findById(id).get();
+        EventsEntity entity = repository.findById(id).orElseThrow(EntityNotFoundException::new);
         if (entity.getState() != StateEnum.PUBLISHED) {
             throw new DataNotFoundException("Event with id=" + id + " was not found");
         }
