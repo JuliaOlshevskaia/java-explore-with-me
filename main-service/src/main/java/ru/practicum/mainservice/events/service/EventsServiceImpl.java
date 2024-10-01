@@ -289,8 +289,7 @@ public class EventsServiceImpl implements EventsService {
                      entities = repository.searchAvailable(paid, LocalDateTime.now(),
                              pageParam);
                  } else {
-                     entities = repository.searchAvailable(text, categories, paid, LocalDateTime.now(),
-                             pageParam);
+                     entities = repository.findAll(pageParam).getContent();
                  }
              } else {
                  entities = repository.searchAvailable(text, categories, paid, LocalDateTime.parse(rangeStart, DTF),
@@ -307,8 +306,7 @@ public class EventsServiceImpl implements EventsService {
                      entities = repository.search(paid, LocalDateTime.now(),
                              pageParam);
                  } else {
-                     entities = repository.search(text, categories, paid, LocalDateTime.now(),
-                             pageParam);
+                     entities = repository.findAll(pageParam).getContent();
                  }
              } else {
                  entities = repository.search(text, categories, paid,  LocalDateTime.parse(rangeStart, DTF),

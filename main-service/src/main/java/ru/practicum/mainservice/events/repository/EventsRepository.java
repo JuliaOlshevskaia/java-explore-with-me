@@ -97,12 +97,13 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
 
     @Query("select ee from EventsEntity ee " +
             "where ee.category.id in (:categories) " +
-            "and ee.eventDate > (:rangeStart) "
+            "and ee.eventDate >= (:rangeStart) "
     )
     List<EventsEntity> search(@Param("categories") List<Integer> categories,
                               @Param("rangeStart") LocalDateTime rangeStart);
 
-    List<EventsEntity> findAllByCategoryIdInAndEventDateAfter(List<Integer> categories, LocalDateTime rangeStart, Pageable pageable);
+
+//    List<EventsEntity> findAllByCategoryIdIn(List<Integer> categories, Pageable pageable);
 
     @Query("select ee from EventsEntity ee " +
             "where ee.paid = (:paid) " +

@@ -1,6 +1,8 @@
 package ru.practicum.statsserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.statsdto.dto.EndpointHit;
 import ru.practicum.statsdto.dto.ViewStats;
@@ -30,10 +32,14 @@ public class EndpointViewServiceImpl implements EndpointViewService {
     }
 
     @Override
-    public List<ViewStats> getStats(String startTime, String endTime, List<String> uris, Boolean unique) {
+    public List<ViewStats> getStats(String startTime, String endTime, List<String> uris, Boolean unique) throws BadRequestException {
         LocalDateTime start = LocalDateTime.parse(startTime, DTF);
         LocalDateTime end = LocalDateTime.parse(endTime, DTF);
         List<EndpointViewEntity> listEntity;
+
+        if (start.isAfter(end)) {
+            throw new BadRequestException();
+        }
 
         if (uris == null || uris.size() == 0) {
             listEntity = repository.findAllByTimestampAfterAndTimestampBefore(start, end);
