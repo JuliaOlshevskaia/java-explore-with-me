@@ -22,17 +22,17 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
     List<EventsEntity> findAllByCategoryId(Integer catId);
 
     @Query("select ee from EventsEntity ee " +
-            "where ee.initiator.id in (:usersId) " +
-            "and ee.category.id in (:categoriesId) " +
-            "and ee.state in (:statesId) " +
-            "and ee.eventDate > (:rangeStart) " +
-            "and ee.eventDate < (:rangeEnd) "
+            "where ee.initiator.id in (:usersId) "
+//            "and ee.category.id in (:categoriesId) " +
+//            "and ee.state in (:statesId) " +
+//            "and ee.eventDate > (:rangeStart) " +
+//            "and ee.eventDate < (:rangeEnd) "
     )
     List<EventsEntity> getAllEvents(List<Integer> usersId,
-                                                                                                          List<StateEnum> statesId,
-                                                                                                          List<Integer> categoriesId,
-                                                                                                          LocalDateTime rangeStart,
-                                                                                                          LocalDateTime rangeEnd,
+//                                                                                                          List<StateEnum> statesId,
+//                                                                                                          List<Integer> categoriesId,
+//                                                                                                          LocalDateTime rangeStart,
+//                                                                                                          LocalDateTime rangeEnd,
                                                                                                           Pageable pageable);
 
     List<EventsEntity> findAllByInitiatorIdInAndStateInAndCategoryIdIn(List<Integer> usersId,
