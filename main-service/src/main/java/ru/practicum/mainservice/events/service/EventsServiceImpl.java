@@ -355,10 +355,14 @@ public class EventsServiceImpl implements EventsService {
         } else if (users == null && states != null && categories != null &&
                 rangeEnd == null && rangeStart == null) {
             events = repository.findAllByStateInAndCategoryIdIn(states, categories, pageParam);
+        } else if (users != null && states != null && categories != null &&
+                rangeEnd == null && rangeStart == null) {
+            events = repository.findAllByInitiatorIdInAndStateInAndCategoryIdIn(users, states, categories, pageParam);
         } else {
-            events = repository.getAllEvents(
-                    users, states, categories, LocalDateTime.parse(rangeStart, DTF),
-                    LocalDateTime.parse(rangeEnd, DTF), pageParam);
+//            events = repository.getAllEvents(
+//                    users, states, categories, LocalDateTime.parse(rangeStart, DTF),
+//                    LocalDateTime.parse(rangeEnd, DTF), pageParam);
+            events = repository.findAll(pageParam).getContent();
         }
 
         List<EventFullDto> eventFullDtos = new ArrayList<>();
