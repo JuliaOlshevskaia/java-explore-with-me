@@ -2,7 +2,6 @@ package ru.practicum.mainservice.events.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.mainservice.categories.service.CategoriesService;
 import ru.practicum.mainservice.events.dto.EventFullDto;
 import ru.practicum.mainservice.events.dto.StateEnum;
 import ru.practicum.mainservice.events.dto.UpdateEventAdminRequest;

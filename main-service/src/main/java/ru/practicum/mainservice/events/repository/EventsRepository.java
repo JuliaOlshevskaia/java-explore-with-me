@@ -14,10 +14,13 @@ import java.util.List;
 @Repository
 public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
     List<EventsEntity> findAllByInitiatorId(Integer userId, Pageable pageable);
+
     EventsEntity findAllByIdAndInitiatorId(Integer eventId, Integer userId);
+
     List<EventsEntity> findAllByInitiatorId(Integer userId);
 
     List<EventsEntity> findAllByCategoryId(Integer catId);
+
     List<EventsEntity> findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(List<Integer> usersId,
                                                                                                           List<StateEnum> statesId,
                                                                                                           List<Integer> categoriesId,

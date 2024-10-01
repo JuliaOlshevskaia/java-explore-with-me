@@ -1,13 +1,9 @@
 package ru.practicum.mainservice.compilations.entity;
 
 import lombok.*;
-import ru.practicum.mainservice.categories.entity.CategoriesEntity;
-import ru.practicum.mainservice.events.dto.StateEnum;
 import ru.practicum.mainservice.events.entity.EventsEntity;
-import ru.practicum.mainservice.users.entity.UserEntity;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -33,6 +29,7 @@ public class CompilationEntity {
 
     @OneToMany(mappedBy = "compilation", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     private Set<EventsEntity> events = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

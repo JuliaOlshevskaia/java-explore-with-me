@@ -1,10 +1,8 @@
 package ru.practicum.mainservice.events.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.implementation.bind.annotation.Default;
 import ru.practicum.mainservice.categories.dto.CategoryDto;
 import ru.practicum.mainservice.users.dto.UserShortDto;
 

@@ -4,7 +4,6 @@ import lombok.Generated;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.mainservice.categories.dto.CategoryDto;
-import ru.practicum.mainservice.categories.dto.NewCategoryDto;
 import ru.practicum.mainservice.categories.entity.CategoriesEntity;
 import ru.practicum.mainservice.events.dto.EventFullDto;
 import ru.practicum.mainservice.events.dto.EventShortDto;

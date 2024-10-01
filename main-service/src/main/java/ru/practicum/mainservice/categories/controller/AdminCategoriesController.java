@@ -8,7 +8,6 @@ import ru.practicum.mainservice.categories.dto.NewCategoryDto;
 import ru.practicum.mainservice.categories.service.CategoriesService;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @AllArgsConstructor

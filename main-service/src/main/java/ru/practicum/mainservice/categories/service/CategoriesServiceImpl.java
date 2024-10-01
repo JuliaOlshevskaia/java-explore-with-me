@@ -9,14 +9,10 @@ import ru.practicum.mainservice.categories.dto.NewCategoryDto;
 import ru.practicum.mainservice.categories.entity.CategoriesEntity;
 import ru.practicum.mainservice.categories.mapper.CategoriesMapper;
 import ru.practicum.mainservice.categories.repository.CategoriesRepository;
-import ru.practicum.mainservice.errors.exceptions.ConstraintViolationException;
 import ru.practicum.mainservice.errors.exceptions.DataNotFoundException;
 import ru.practicum.mainservice.errors.exceptions.EventValidationException;
 import ru.practicum.mainservice.events.entity.EventsEntity;
 import ru.practicum.mainservice.events.repository.EventsRepository;
-import ru.practicum.mainservice.users.dto.NewUserRequest;
-import ru.practicum.mainservice.users.dto.UserDto;
-import ru.practicum.mainservice.users.entity.UserEntity;
 
 import java.util.List;
 

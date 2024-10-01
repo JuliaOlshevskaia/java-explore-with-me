@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.mainservice.errors.exceptions.DataNotFoundException;
 import ru.practicum.mainservice.errors.exceptions.EventValidationException;
 import ru.practicum.mainservice.events.dto.StateEnum;
-import ru.practicum.mainservice.events.dto.StatusUpdateRequestEnum;
 import ru.practicum.mainservice.events.entity.EventsEntity;
 import ru.practicum.mainservice.events.repository.EventsRepository;
 import ru.practicum.mainservice.requests.dto.ParticipationRequestDto;

@@ -3,7 +3,6 @@ package ru.practicum.mainservice.users.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.mainservice.categories.service.CategoriesService;
 import ru.practicum.mainservice.users.dto.NewUserRequest;
 import ru.practicum.mainservice.users.dto.UserDto;
 import ru.practicum.mainservice.users.service.UserService;

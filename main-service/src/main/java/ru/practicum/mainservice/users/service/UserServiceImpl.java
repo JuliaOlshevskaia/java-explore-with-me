@@ -1,10 +1,8 @@
 package ru.practicum.mainservice.users.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.mainservice.errors.exceptions.DataNotFoundException;
 import ru.practicum.mainservice.users.dto.NewUserRequest;
@@ -13,7 +11,6 @@ import ru.practicum.mainservice.users.entity.UserEntity;
 import ru.practicum.mainservice.users.mapper.UserMapper;
 import ru.practicum.mainservice.users.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

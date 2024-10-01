@@ -3,7 +3,6 @@ package ru.practicum.mainservice.compilations.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.mainservice.categories.service.CategoriesService;
 import ru.practicum.mainservice.compilations.dto.CompilationDto;
 import ru.practicum.mainservice.compilations.dto.NewCompilationDto;
 import ru.practicum.mainservice.compilations.dto.UpdateCompilationRequest;

@@ -5,9 +5,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.mainservice.requests.dto.ParticipationRequestDto;
 import ru.practicum.mainservice.requests.entity.RequestsEntity;
-import ru.practicum.mainservice.users.dto.NewUserRequest;
-import ru.practicum.mainservice.users.dto.UserDto;
-import ru.practicum.mainservice.users.dto.UserShortDto;
 
 import java.util.List;
 

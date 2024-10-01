@@ -363,7 +363,7 @@ public class EventsServiceImpl implements EventsService {
 
         List<EventFullDto> eventFullDtos = new ArrayList<>();
 
-        if (events.size()>0) {
+        if (events.size() > 0) {
             for (EventsEntity entities : events) {
                 EventFullDto result = mapper.toDto(entities,
                         categoriesMapper.toDto(entities.getCategory()),
@@ -394,7 +394,7 @@ public class EventsServiceImpl implements EventsService {
 
     private void checkEventDate(LocalDateTime eventDate) {
         long diffInHours = ChronoUnit.HOURS.between(LocalDateTime.now(), eventDate);
-        if (diffInHours<2) {
+        if (diffInHours < 2) {
             throw new ValidationException("Field: eventDate. Error: должно содержать дату, которая еще не наступила. " +
                     "Value: " + eventDate);
         }
