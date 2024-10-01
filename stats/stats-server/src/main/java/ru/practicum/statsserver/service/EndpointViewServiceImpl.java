@@ -2,7 +2,6 @@ package ru.practicum.statsserver.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.statsdto.dto.EndpointHit;
 import ru.practicum.statsdto.dto.ViewStats;

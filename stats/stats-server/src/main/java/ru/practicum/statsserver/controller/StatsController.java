@@ -3,7 +3,6 @@ package ru.practicum.statsserver.controller;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.statsdto.dto.EndpointHit;
 import ru.practicum.statsdto.dto.ViewStats;
