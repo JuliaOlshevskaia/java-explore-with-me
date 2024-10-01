@@ -284,7 +284,7 @@ public class EventsServiceImpl implements EventsService {
                      entities = repository.searchAvailable(text, LocalDateTime.now(),
                              pageParam);
                  } else if (text == null && categories != null && paid == null) {
-                     entities = repository.searchAvailable(categories, LocalDateTime.now(), pageParam);
+                     entities = repository.findAll(pageParam).getContent();
                  } else if (text == null && categories == null && paid != null) {
                      entities = repository.searchAvailable(paid, LocalDateTime.now(),
                              pageParam);
@@ -302,7 +302,7 @@ public class EventsServiceImpl implements EventsService {
                      entities = repository.search(text, LocalDateTime.now(),
                              pageParam);
                  } else if (text == null && categories != null && paid == null) {
-                     entities = repository.findAllByCategoryIdInAndEventDateAfter(categories, LocalDateTime.now(), pageParam2);
+                     entities = repository.findAll(pageParam).getContent();
                  } else if (text == null && categories == null && paid != null) {
                      entities = repository.search(paid, LocalDateTime.now(),
                              pageParam);
