@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 public class EventRequestStatusUpdateRequest {
     private List<Integer> requestIds;
-    private String status; // enum CONFIRMED, REJECTED
+    private String status;
 }

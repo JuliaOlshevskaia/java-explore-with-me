@@ -23,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository repository;
-//    private final CompilationEventRepository compilationEventRepository;compilationEventRepository
     private final CompilationMapper mapper;
     private final EventsMapper eventsMapper;
     private final EventsRepository eventsRepository;
@@ -41,9 +40,6 @@ public class CompilationServiceImpl implements CompilationService {
                 EventsEntity eventEntity = eventsRepository.findById(event).get();
                 eventEntity.setCompilation(entitySaved);
                 EventsEntity eventsEntitySaved = eventsRepository.save(eventEntity);
-//                CompilationEventEntity compilationEventEntity = new CompilationEventEntity(null, entitySaved, eventEntity);
-//                CompilationEventEntity compilationEventsEntitySaved =
-//                        compilationEventRepository.save(compilationEventEntity);
                 EventShortDto eventShortDto = eventsMapper.toShortDto(eventsEntitySaved);
                 eventShortDtos.add(eventShortDto);
             }
@@ -79,7 +75,6 @@ public class CompilationServiceImpl implements CompilationService {
 
         CompilationDto dto = mapper.toDto(entity);
         List<EventShortDto> eventShortDtos = new ArrayList<>();
-//        compilationEventRepository.deleteById(compId);
 
         if (request.getEvents() != null && request.getEvents().size() > 0) {
 
@@ -94,9 +89,6 @@ public class CompilationServiceImpl implements CompilationService {
 
                 eventEntity.setCompilation(entity);
                 EventsEntity eventsEntitySaved = eventsRepository.save(eventEntity);
-//                CompilationEventEntity compilationEventEntity = new CompilationEventEntity(null, entitySaved, eventEntity);
-//                CompilationEventEntity compilationEventsEntitySaved =
-//                        compilationEventRepository.save(compilationEventEntity);
                 EventShortDto eventShortDto = eventsMapper.toShortDto(eventsEntitySaved);
                 eventShortDtos.add(eventShortDto);
             }

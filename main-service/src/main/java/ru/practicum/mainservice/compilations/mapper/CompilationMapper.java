@@ -10,8 +10,6 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 @Generated
 @Mapper(componentModel = SPRING)
 public interface CompilationMapper {
-//    @Mapping(target = "events", source = null)
-//    CompilationEntity toEntity(NewCompilationDto newCompilation);
     CompilationDto toDto(CompilationEntity entity);
 
 }

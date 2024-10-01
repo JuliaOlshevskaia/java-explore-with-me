@@ -30,7 +30,7 @@ public class UpdateEventAdminRequest {
 
     private Boolean requestModeration;
 
-    private StateActionAdminEnum stateAction; //enum SEND_TO_REVIEW CANCEL_REVIEW
+    private StateActionAdminEnum stateAction;
 
     @Size(min = 3, max = 120)
     private String title;

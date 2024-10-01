@@ -20,8 +20,6 @@ public class UpdateCompilationRequest {
     @Builder.Default
     private Boolean pinned = false;
 
-//    @NotNull
-//    @NotBlank
     @Size(min = 1, max = 50)
     private String title;
 

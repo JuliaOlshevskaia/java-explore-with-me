@@ -37,7 +37,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-//@AllArgsConstructor
 public class EventsServiceImpl implements EventsService {
     private final EventsRepository repository;
     private final CategoriesRepository categoriesRepository;
@@ -55,8 +54,6 @@ public class EventsServiceImpl implements EventsService {
     @Override
     public List<EventShortDto> getEvents(Integer userId, Integer from, Integer size) {
         Pageable pageParam = PageRequest.of(from, size);
-
-//        List<EventsEntity> eventsEntities = repository.getByUser(userId, pageParam);
         List<EventsEntity> eventsEntities = repository.findAll(pageParam).getContent();
         return mapper.toListShortDto(eventsEntities);
     }
@@ -76,7 +73,7 @@ public class EventsServiceImpl implements EventsService {
         if (entity.getConfirmedRequests() == null) {
             entity.setConfirmedRequests(0);
         }
-//        entity.setCategory(categoriesEntity);
+
         EventsEntity entityCreated = repository.save(entity);
         EventFullDto result = mapper.toDto(entityCreated,
                 categoriesMapper.toDto(entityCreated.getCategory()),
@@ -274,7 +271,6 @@ public class EventsServiceImpl implements EventsService {
                                     String rangeEnd, Boolean onlyAvailable, String sort, Integer from,
                                     Integer size, HttpServletRequest request) {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
-        Pageable pageParam2 = PageRequest.of(from, size);
          List<EventsEntity> entities;
 
          if (onlyAvailable) {
@@ -318,15 +314,7 @@ public class EventsServiceImpl implements EventsService {
              throw new ValidationException("Event must be published");
          }
 
-//         for (EventsEntity event : entities) {
-//             if (event.getState() != StateEnum.PUBLISHED) {
-//                 throw new ValidationException("Event must be published");
-//             }
-//         }
-
          List<EventShortDto> eventShortDtos = new ArrayList<>();
-
-//        List<EventShortDto> eventShortDtos = mapper.toListShortDto(entities);
 
          for (EventsEntity entity : entities) {
              EventShortDto eventShortDto = new EventShortDto(entity.getAnnotation(),
@@ -371,7 +359,6 @@ public class EventsServiceImpl implements EventsService {
         } else {
             events = repository.getAllEvents(
                     users, pageParam);
-//            events = repository.findAll(pageParam).getContent();
         }
 
         List<EventFullDto> eventFullDtos = new ArrayList<>();

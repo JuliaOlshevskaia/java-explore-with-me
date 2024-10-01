@@ -20,7 +20,7 @@ public class NewCompilationDto {
     private List<Integer> events;
 
     @Builder.Default
-    private Boolean pinned = false; // default = false
+    private Boolean pinned = false;
 
     @NotNull
     @NotBlank

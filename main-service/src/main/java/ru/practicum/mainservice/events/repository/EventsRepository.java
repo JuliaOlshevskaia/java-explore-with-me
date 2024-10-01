@@ -29,17 +29,8 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
 
     @Query("select ee from EventsEntity ee " +
             "where ee.initiator.id in (:usersId) "
-//            "and ee.category.id in (:categoriesId) " +
-//            "and ee.state in (:statesId) " +
-//            "and ee.eventDate > (:rangeStart) " +
-//            "and ee.eventDate < (:rangeEnd) "
     )
-    List<EventsEntity> getAllEvents(List<Integer> usersId,
-//                                                                                                          List<StateEnum> statesId,
-//                                                                                                          List<Integer> categoriesId,
-//                                                                                                          LocalDateTime rangeStart,
-//                                                                                                          LocalDateTime rangeEnd,
-                                                                                                          Pageable pageable);
+    List<EventsEntity> getAllEvents(List<Integer> usersId, Pageable pageable);
 
     List<EventsEntity> findAllByInitiatorIdInAndStateInAndCategoryIdIn(List<Integer> usersId,
                                                                                                           List<StateEnum> statesId,
@@ -101,9 +92,6 @@ public interface EventsRepository extends JpaRepository<EventsEntity, Integer> {
     )
     List<EventsEntity> search(@Param("categories") List<Integer> categories,
                               @Param("rangeStart") LocalDateTime rangeStart);
-
-
-//    List<EventsEntity> findAllByCategoryIdIn(List<Integer> categories, Pageable pageable);
 
     @Query("select ee from EventsEntity ee " +
             "where ee.paid = (:paid) " +

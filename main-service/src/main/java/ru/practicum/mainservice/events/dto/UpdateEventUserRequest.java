@@ -13,23 +13,16 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateEventUserRequest {
-//    @NotNull
-//    @NotBlank
     @Size(min = 20, max = 2000)
     private String annotation;
 
-//    @NotNull
     private Integer category;
 
-//    @NotNull
-//    @NotBlank
     @Size(min = 20, max = 7000)
     private String description;
 
-//    @NotNull
     private String eventDate;
 
-//    @NotNull
     private Location location;
 
     private Boolean paid;
@@ -39,9 +32,8 @@ public class UpdateEventUserRequest {
 
     private Boolean requestModeration;
 
-    private StateActionEnum stateAction; //enum SEND_TO_REVIEW CANCEL_REVIEW
+    private StateActionEnum stateAction;
 
-//    @NotNull
     @Size(min = 3, max = 120)
     private String title;
 }

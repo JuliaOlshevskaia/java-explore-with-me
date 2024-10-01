@@ -43,13 +43,6 @@ public class ErrorHandler {
         apiError.setReason("The required object was not found.");
         apiError.setStatus(HttpStatus.NOT_FOUND.name());
         apiError.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-
-//        apiError.setLevel("FATAL");
-//        apiError.setCode(exception.getClass().getName());
-//        apiError.setTitle("Ошибка сервера");
-//        apiError.setUserMessage("Сервер временно недоступен");
-//        apiError.setEndpoint(request.getRequestURI());
-//        apiError.setDebugMessage(exception.getMessage()+" at " + exception.getParameter() + ": " + exception.getName());
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 

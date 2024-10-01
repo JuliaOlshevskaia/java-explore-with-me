@@ -28,9 +28,9 @@ public class EventFullDto {
     private Location location;
     @NotNull
     private Boolean paid;
-    private Integer participantLimit; // default = 0
+    private Integer participantLimit;
     private String publishedOn;
-    private Boolean requestModeration; // default = true
+    private Boolean requestModeration;
     private String state;
     @NotNull
     private String title;
