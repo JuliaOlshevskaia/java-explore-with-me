@@ -1,6 +1,7 @@
 package ru.practicum.mainservice.events.service;
 
 import ru.practicum.mainservice.events.dto.*;
+import ru.practicum.mainservice.events.entity.EventsEntity;
 import ru.practicum.mainservice.requests.dto.ParticipationRequestDto;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,4 +30,6 @@ public interface EventsService {
                                     Integer size, HttpServletRequest request);
 
     EventFullDto getEvent_1(Integer id);
+
+    EventShortDto toEventShortDto(EventsEntity entity);
 }

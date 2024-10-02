@@ -421,4 +421,13 @@ public class EventsServiceImpl implements EventsService {
         return result;
     }
 
+    @Override
+    public EventShortDto toEventShortDto(EventsEntity entity) {
+        EventShortDto eventShortDto = new EventShortDto(entity.getAnnotation(),
+                new CategoryDto(entity.getCategory().getId(), entity.getCategory().getName()),
+                entity.getConfirmedRequests(), entity.getEventDate().format(DTF), entity.getId(),
+                new UserShortDto(entity.getInitiator().getId(), entity.getInitiator().getName()),
+                entity.getPaid(), entity.getTitle(), entity.getViews());
+        return eventShortDto;
+    }
 }
