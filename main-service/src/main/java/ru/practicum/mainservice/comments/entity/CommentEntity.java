@@ -6,7 +6,6 @@ import ru.practicum.mainservice.users.entity.UserEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter
