@@ -1,6 +1,5 @@
 package ru.practicum.statsserver.mapper;
 
-import lombok.Generated;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.statsdto.dto.EndpointHit;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Generated
 @Mapper(componentModel = SPRING)
 public interface EndpointViewMapper {
     EndpointHit toEndpointHit(EndpointViewEntity endpointViewEntity);
