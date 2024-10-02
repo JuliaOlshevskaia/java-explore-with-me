@@ -33,12 +33,4 @@ public class CommentEntity {
 
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass() || ((CommentEntity) o).id == null || this.id == null) return false;
-        CommentEntity that = (CommentEntity) o;
-        return Objects.equals(id, that.id);
-    }
 }
