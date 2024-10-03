@@ -76,8 +76,8 @@ public class CommentServiceImpl implements CommentService {
         List<CommentEntity> entities = repository.findAllByCommentatorIdAndEventIdAndCreatedDateAfterAndCreatedDateBefore(
                 commentatorId,
                 eventId,
-                rangeStart == null ? null : LocalDateTime.parse(rangeStart, DTF),
-                rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, DTF),
+//                rangeStart == null ? null : LocalDateTime.parse(rangeStart, DTF),
+//                rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, DTF),
                 pageParam);
 
         List<CommentDto> result = new ArrayList<>();
