@@ -15,8 +15,8 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
     @Query("select ce from CommentEntity ce " +
             "where ((:commentatorId) is null or ce.commentator.id = (:commentatorId)) " +
             "and ((:eventId) is null or ce.event.id = (:eventId)) " +
-            "and ((:rangeStart) is null ) " +
-            "and ((:rangeEnd) is null ) "
+            "and (:rangeStart is null ) " +
+            "and (:rangeEnd is null ) "
     )
     List<CommentEntity> findAllByCommentatorIdAndEventIdAndCreatedDateAfterAndCreatedDateBefore(@Param("commentatorId") Integer commentatorId,
                            @Param("eventId") Integer eventId,
