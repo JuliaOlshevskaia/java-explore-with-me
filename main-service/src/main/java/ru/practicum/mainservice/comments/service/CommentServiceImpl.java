@@ -52,8 +52,12 @@ public class CommentServiceImpl implements CommentService {
 
         CommentEntity entity = new CommentEntity(null, user, event, request.getComment(), LocalDateTime.now());
         CommentEntity entityCreated = repository.save(entity);
-        CommentDto dto = new CommentDto(entityCreated.getId(), userMapper.toShortDto(entityCreated.getCommentator()),
-                eventsService.toEventShortDto(entityCreated.getEvent()), entityCreated.getComment(), entityCreated.getCreatedDate());
+        CommentDto dto = new CommentDto(
+                entityCreated.getId(),
+                userMapper.toShortDto(entityCreated.getCommentator()),
+                eventsService.toEventShortDto(entityCreated.getEvent()),
+                entityCreated.getComment(),
+                entityCreated.getCreatedDate());
         return dto;
     }
 
@@ -69,31 +73,22 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDto> getComments(Integer eventId, Integer commentatorId, String rangeStart, String rangeEnd,
                                         Integer from, Integer size) {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
-        List<CommentEntity> entities = new ArrayList<>();
-
-        if (eventId != null && commentatorId == null && rangeStart == null && rangeEnd == null) {
-            entities = repository.findAllByEventId(eventId, pageParam);
-        } else if (eventId == null && commentatorId != null && rangeStart == null && rangeEnd == null) {
-            entities = repository.findAllByCommentatorId(commentatorId, pageParam);
-        } else if (eventId != null && commentatorId == null && rangeStart != null && rangeEnd != null) {
-            entities = repository.findAllByEventIdAndCreatedDateAfterAndCreatedDateBefore(eventId,
-                    LocalDateTime.parse(rangeStart, DTF), LocalDateTime.parse(rangeEnd, DTF), pageParam);
-        } else if (eventId == null && commentatorId != null && rangeStart != null && rangeEnd != null) {
-            entities = repository.findAllByCommentatorIdAndCreatedDateAfterAndCreatedDateBefore(commentatorId,
-                    LocalDateTime.parse(rangeStart, DTF), LocalDateTime.parse(rangeEnd, DTF), pageParam);
-        } else if (eventId != null && commentatorId != null && rangeStart == null && rangeEnd == null) {
-            entities = repository.findAllByCommentatorIdAndEventId(commentatorId, eventId, pageParam);
-        } else if ((eventId != null && commentatorId != null && rangeStart != null && rangeEnd != null)) {
-            entities = repository.findAllByCommentatorIdAndEventIdAndCreatedDateAfterAndCreatedDateBefore(commentatorId, eventId,
-                    LocalDateTime.parse(rangeStart, DTF), LocalDateTime.parse(rangeEnd, DTF), pageParam);
-        }
+        List<CommentEntity> entities = repository.findAllByCommentatorIdAndEventIdAndCreatedDateAfterAndCreatedDateBefore(
+                commentatorId,
+                eventId,
+                rangeStart == null ? null : LocalDateTime.parse(rangeStart, DTF),
+                rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, DTF),
+                pageParam);
 
         List<CommentDto> result = new ArrayList<>();
 
-        for (CommentEntity entity : entities) {
-            result.add(new CommentDto(entity.getId(), userMapper.toShortDto(entity.getCommentator()),
-                    eventsService.toEventShortDto(entity.getEvent()), entity.getComment(), entity.getCreatedDate()));
-        }
+        entities.forEach(e -> result.add(new CommentDto(
+                e.getId(),
+                userMapper.toShortDto(e.getCommentator()),
+                eventsService.toEventShortDto(e.getEvent()),
+                e.getComment(),
+                e.getCreatedDate())));
+
         return result;
     }
 
