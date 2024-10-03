@@ -75,9 +75,9 @@ public class CommentServiceImpl implements CommentService {
         Pageable pageParam = PageRequest.of(from > 0 ? from / size : 0, size);
         List<CommentEntity> entities = repository.findAllByCommentatorIdAndEventIdAndCreatedDateAfterAndCreatedDateBefore(
                 commentatorId,
-//                eventId,
-//                rangeStart == null ? null : LocalDateTime.parse(rangeStart, DTF),
-//                rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, DTF),
+                eventId,
+                rangeStart == null ? null : LocalDateTime.parse(rangeStart, DTF),
+                rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, DTF),
                 pageParam);
 
         List<CommentDto> result = new ArrayList<>();
